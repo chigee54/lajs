@@ -1,5 +1,5 @@
-# Simple MLP for Ranking based on Lawformer under Limited Resources
-在有限资源下基于lawformer的简易MLP排序。
+# Simple MLP for Learning to Rank based on Lawformer
+基于Lawformer的简易MLP排序学习。
 
 ## 环境配置
 GPU: RTX3090*1
