@@ -1,20 +1,24 @@
+![](https://img.shields.io/badge/license-MIT-blue.svg) 
+![](https://img.shields.io/badge/Python-3.8.13-blue.svg)
+![](https://img.shields.io/badge/torch-1.7.1-brightgreen.svg)
+![](https://img.shields.io/badge/transformers-4.2.1-brightgreen.svg)
+![](https://img.shields.io/badge/gensim-3.8.0-brightgreen.svg)
+![](https://img.shields.io/badge/jieba-0.42.1-brightgreen.svg)
+![](https://img.shields.io/badge/numpy-1.22.3-brightgreen.svg)
+![](https://img.shields.io/badge/loguru-0.6.0-brightgreen.svg)
+
+
+
 # Simple MLP for Learning to Rank based on Lawformer
 基于Lawformer的简易MLP排序学习。
 
 ## 环境配置
-Python3.8
+Python3.8.13
 
 GPU: RTX3090*1
 
 具体请参考`requirments.txt`
-```bash
-torch==1.7.1
-transformers==4.2.1
-gensim==3.8.0
-jieba==0.42.1
-loguru==0.6.0
-numpy==1.22.3
-```
+
 
 ## 概述
 目的：在显卡资源有限的情况下尽可能的发挥Lawformer模型的效果
@@ -69,3 +73,12 @@ python train.py \
     --max_length 1533 
 ```
 
+## 结果
+以下为第二阶段测试结果
+
+
+| 模型              |NDCG@30 ||
+| :--------------   | --------- | ---------- |
+|               |Dev|Test|
+| Lawformer-Finetune| 0.9386    |            |
+| Lawformer-RankMLP | 0.9491    | 0.9355     |
