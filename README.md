@@ -77,7 +77,7 @@ python train.py \
 以下为第二阶段测试结果
 
 
-|                   |           NDCG@30 ||
+|                   |  NDCG@30  |  NDCG@30   |
 | :--------------   | --------- | ---------- |
 |       模型        |     Dev   |    Test    |
 | Lawformer-Finetune| 0.9386    |            |
