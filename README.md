@@ -33,24 +33,6 @@ numpy==1.22.3
 - **训练Rank_MLP**：将所有交互向量分组，每个查询案例对应100个候选案例，搭建一个简易的MLP，对这100个交互向量重新以PairWise的方式进行排序学习，损失函数参考CoSENT（[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)）。具体请参考`rank_mlp.py`
 
 
-
-## 训练
-直接运行`train.sh`，其中train_data_path需改成第二阶段训练集的路径，dev_data_path需改成第一阶段训练集的路径。
-```bash
-#!/bin/bash
-
-train_data_path=cail2022_类案检索_第二阶段/train/
-dev_data_path=cail2022_类案检索_第一阶段/train/label_top30_dict.json
-
-python train.py \
-    --input $train_data_path \
-    --dev_id_file $dev_data_path \
-    --output_path ./saved \
-    --model_path thunlp/Lawformer \
-    --tokenizer_path hfl/chinese-roberta-wwm-ext \
-    --max_length 1533 
-```
-
 ## 预测
 直接运行`run.sh`，其中data_path需改成封测阶段数据的路径。
 ```bash
@@ -67,5 +49,23 @@ python predict.py \
     --tokenizer_path hfl/chinese-roberta-wwm-ext \
     --extract_batch_size 10 \
     --max_length 1533
+```
+
+
+## 训练
+直接运行`train.sh`，其中train_data_path需改成第二阶段训练集的路径，dev_data_path需改成第一阶段训练集的路径。
+```bash
+#!/bin/bash
+
+train_data_path=cail2022_类案检索_第二阶段/train/
+dev_data_path=cail2022_类案检索_第一阶段/train/label_top30_dict.json
+
+python train.py \
+    --input $train_data_path \
+    --dev_id_file $dev_data_path \
+    --output_path ./saved \
+    --model_path thunlp/Lawformer \
+    --tokenizer_path hfl/chinese-roberta-wwm-ext \
+    --max_length 1533 
 ```
 
