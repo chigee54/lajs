@@ -1,4 +1,4 @@
-![](https://img.shields.io/badge/license-MIT-blue.svg) 
+
 ![](https://img.shields.io/badge/Python-3.8.13-blue.svg)
 ![](https://img.shields.io/badge/torch-1.7.1-brightgreen.svg)
 ![](https://img.shields.io/badge/transformers-4.2.1-brightgreen.svg)
@@ -77,8 +77,8 @@ python train.py \
 以下为第二阶段测试结果
 
 
-| 模型              |NDCG@30 ||
+|                   |           NDCG@30 ||
 | :--------------   | --------- | ---------- |
-|               |Dev|Test|
+|       模型        |     Dev   |    Test    |
 | Lawformer-Finetune| 0.9386    |            |
 | Lawformer-RankMLP | 0.9491    | 0.9355     |
