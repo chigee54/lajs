@@ -2,10 +2,19 @@
 基于Lawformer的简易MLP排序学习。
 
 ## 环境配置
+Python3.8
+
 GPU: RTX3090*1
 
 具体请参考`requirments.txt`
-
+```bash
+torch==1.7.1
+transformers==4.2.1
+gensim==3.8.0
+jieba==0.42.1
+loguru==0.6.0
+numpy==1.22.3
+```
 
 ## 概述
 目的：在显卡资源有限的情况下尽可能的发挥Lawformer模型的效果
@@ -25,6 +34,23 @@ GPU: RTX3090*1
 
 
 
+## 训练
+直接运行`train.sh`，其中train_data_path需改成第二阶段训练集的路径，dev_data_path需改成第一阶段训练集的路径。
+```bash
+#!/bin/bash
+
+train_data_path=cail2022_类案检索_第二阶段/train/
+dev_data_path=cail2022_类案检索_第一阶段/train/label_top30_dict.json
+
+python train.py \
+    --input $train_data_path \
+    --dev_id_file $dev_data_path \
+    --output_path ./saved \
+    --model_path thunlp/Lawformer \
+    --tokenizer_path hfl/chinese-roberta-wwm-ext \
+    --max_length 1533 
+```
+
 ## 预测
 直接运行`run.sh`，其中data_path需改成封测阶段数据的路径。
 ```bash
@@ -41,22 +67,5 @@ python predict.py \
     --tokenizer_path hfl/chinese-roberta-wwm-ext \
     --extract_batch_size 10 \
     --max_length 1533
-```
-
-## 训练
-直接运行`train.sh`，其中train_data_path需改成第二阶段训练集的路径，dev_data_path需改成第一阶段训练集的路径。
-```bash
-#!/bin/bash
-
-train_data_path=cail2022_类案检索_第二阶段/train/
-dev_data_path=cail2022_类案检索_第一阶段/train/label_top30_dict.json
-
-python train.py \
-    --input $train_data_path \
-    --dev_id_file $dev_data_path \
-    --output_path ./saved \
-    --model_path thunlp/Lawformer \
-    --tokenizer_path hfl/chinese-roberta-wwm-ext \
-    --max_length 1533 
 ```
 
