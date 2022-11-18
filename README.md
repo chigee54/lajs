@@ -81,3 +81,10 @@ python train.py \
 | :--------------   | --------- | ---------- |
 | Lawformer-Finetune| 0.9386    |            |
 | Lawformer-RankMLP | 0.9491    | 0.9355     |
+
+
+## 模型下载
+
+百度网盘链接：[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)
+
+提取码：
