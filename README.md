@@ -74,11 +74,10 @@ python train.py \
 ```
 
 ## 结果
-以下为第二阶段测试结果
+以下为第二阶段测试结果，评测指标为NDCG@30
 
 
-|                   |  NDCG@30  |  NDCG@30   |
+|         模型       |    Dev    |    Test    |
 | :--------------   | --------- | ---------- |
-|       模型        |     Dev   |    Test    |
 | Lawformer-Finetune| 0.9386    |            |
 | Lawformer-RankMLP | 0.9491    | 0.9355     |
