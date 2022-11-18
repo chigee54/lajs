@@ -1,11 +1,11 @@
 
 ![](https://img.shields.io/badge/Python-3.8.13-blue.svg)
-![](https://img.shields.io/badge/torch-1.7.1-brightgreen.svg)
-![](https://img.shields.io/badge/transformers-4.2.1-brightgreen.svg)
+![](https://img.shields.io/badge/torch-1.7.1-blue.svg)
+![](https://img.shields.io/badge/transformers-4.2.1-blue.svg)
 ![](https://img.shields.io/badge/gensim-3.8.0-brightgreen.svg)
 ![](https://img.shields.io/badge/jieba-0.42.1-brightgreen.svg)
-![](https://img.shields.io/badge/numpy-1.22.3-brightgreen.svg)
-![](https://img.shields.io/badge/loguru-0.6.0-brightgreen.svg)
+![](https://img.shields.io/badge/numpy-1.22.3-red.svg)
+![](https://img.shields.io/badge/loguru-0.6.0-red.svg)
 
 
 
