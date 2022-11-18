@@ -85,6 +85,6 @@ python train.py \
 
 ## 模型下载
 
-百度网盘链接：[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)
+百度网盘链接：[https://pan.baidu.com/s/1eusFOqh2KiG3KEo4HQqhgw](https://pan.baidu.com/s/1eusFOqh2KiG3KEo4HQqhgw)
 
-提取码：
+提取码：loxr
