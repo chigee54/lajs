@@ -26,15 +26,37 @@ GPU: RTX3090*1
 
 
 ## 训练
-
-训练代码：
+直接运行`train.sh`，其中train_data_path需改成第二阶段训练集的路径，dev_data_path需改成第一阶段训练集的路径。
 ```bash
-python train.py
+#!/bin/bash
+
+train_data_path=cail2022_类案检索_第二阶段/train/
+dev_data_path=cail2022_类案检索_第一阶段/train/label_top30_dict.json
+
+python train.py \
+    --input $train_data_path \
+    --dev_id_file $dev_data_path \
+    --output_path ./saved \
+    --model_path thunlp/Lawformer \
+    --tokenizer_path hfl/chinese-roberta-wwm-ext \
+    --max_length 1533 
 ```
 
 ## 预测
-直接运行`run.sh`
+直接运行`run.sh`，其中data_path需改成封测阶段数据的路径。
 ```bash
-python predict.py
+#!/bin/bash
+
+data_path=cail2022_类案检索_封测阶段/
+
+python predict.py \
+    --input $data_path \
+    --output ./ \
+    --encoder_path saved/bsz1_lr1e-05/lawformer_best.pt \
+    --rank_mlp_path saved/bsz1_lr5e-05/rank_mlp_best.pt \
+    --model_path thunlp/Lawformer \
+    --tokenizer_path hfl/chinese-roberta-wwm-ext \
+    --extract_batch_size 10 \
+    --max_length 1533
 ```
 
