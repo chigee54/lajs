@@ -30,7 +30,7 @@ numpy==1.22.3
 
 - **提取交互向量**：在Lawformer微调之后，取出所有查询与候选的交互向量。具体请参考`interact_embeddings.py`
 
-- **训练Rank_MLP**：将所有交互向量分组，每个查询案例对应100个候选案例，搭建一个简易的MLP，对这100个交互向量重新以PairWise的方式进行排序学习，损失函数参考CoSENT（[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)）。具体请参考`rank_mlp.py`
+- **训练Rank_MLP**：将所有交互向量分组，每个查询案例对应100个候选案例，搭建一个简易的MLP，对这100个交互向量重新以PairWise的方式进行排序学习，损失函数采用CoSENT（[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)）。具体请参考`rank_mlp.py`
 
 
 ## 预测
