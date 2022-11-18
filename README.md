@@ -4,7 +4,7 @@
 ![](https://img.shields.io/badge/transformers-4.2.1-purple.svg)
 ![](https://img.shields.io/badge/gensim-3.8.0-brightgreen.svg)
 ![](https://img.shields.io/badge/jieba-0.42.1-yellow.svg)
-![](https://img.shields.io/badge/numpy-1.22.3-grey.svg)
+![](https://img.shields.io/badge/numpy-1.22.3-green.svg)
 ![](https://img.shields.io/badge/loguru-0.6.0-red.svg)
 
 
