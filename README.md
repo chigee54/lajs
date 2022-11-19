@@ -91,4 +91,7 @@ python train.py \
 
 ## 参考
 
-（[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)）
+- CoSENT：[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)
+
+- Lawformer：[https://github.com/thunlp/LegalPLMs](https://github.com/thunlp/LegalPLMs)
+
