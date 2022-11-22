@@ -23,11 +23,11 @@ GPU: RTX3090*1
 ## 概述
 目的：在显卡资源有限的情况下尽可能的发挥Lawformer模型的效果
 
-分析：在Lawformer发布的论文中提到，对于类案检索长文本数据，query长度为509，candidates长度为3072，则模型的输入总长度为3584。
+分析：在Lawformer发布的论文中提到，对于类案检索长文本数据，query长度限制为509，candidates长度限制为3072，则模型的输入总长度为3584。
 在本方法中限制模型的输入总长度为1533（实际上还未达到显存的极限），query长度为509，candidates长度为1020（是论文中的1/3）。
 
 方法：
-- **数据预处理**：既然限制了candidates的长度为1020，那么就得筛选最相关的那一部分作为模型的输入。本方法仅考虑ajjbqk字段内容，前五句必选，后面的内容利用BM25进行筛选，筛选出的内容长度≤700，最后加起来总长度不定。具体代码请参考`data_preprocessing.py`
+- **数据预处理**：既然限制了candidates的长度为1020，那么就得筛选最相关的部分作为模型的输入。本方法仅考虑ajjbqk字段内容，前五句必选，后面的内容利用BM25进行筛选，筛选出的内容长度≤700，最后加起来总长度不定。具体代码请参考`data_preprocessing.py`
 
 - **Lawformer-Finetune**：预处理后的数据即可用于微调Lawformer，训练时将crime+query作为查询案例的输入，将ajName+candidate作为候选案例的输入，最后查询案例+候选案例输入模型中进行交互，训练batch_size设置为1，采用MSE-Loss以Pointwise方式进行排序学习，评估时采用NDCG@30。具体代码请参考`train.py`
 
@@ -46,8 +46,8 @@ data_path=cail2022_类案检索_封测阶段/
 python predict.py \
     --input $data_path \
     --output ./ \
-    --encoder_path saved/bsz1_lr1e-05/lawformer.pt \
-    --rank_model_path saved/bsz1_lr5e-05/RankAttention.pt \
+    --encoder_path saved/bsz1_lr1e-05/Lawformer.pt \
+    --rank_model_path saved/bsz1_lr1e-04/RankAttention.pt \
     --model_path thunlp/Lawformer \
     --tokenizer_path hfl/chinese-roberta-wwm-ext \
     --extract_batch_size 10 \
