@@ -29,7 +29,7 @@ GPU: RTX3090*1
 方法：
 - **数据预处理**：既然限制了candidates的长度为1020，那么就得筛选最相关的部分作为模型的输入。本方法仅考虑ajjbqk字段内容，前五句必选，后面的内容利用BM25进行筛选，筛选出的内容长度≤700，最后加起来总长度不定。具体代码请参考`data_preprocessing.py`
 
-- **Lawformer-Finetune**：预处理后的数据即可用于微调Lawformer，训练时将crime+query作为查询案例的输入，将ajName+candidate作为候选案例的输入，最后查询案例+候选案例输入模型中进行交互，训练batch_size设置为1，采用MSE-Loss以Pointwise方式进行排序学习，评估时采用NDCG@30。具体代码请参考`train.py`
+- **Lawformer-Finetune**：预处理后的数据即可用于微调Lawformer，训练时将crime+query作为查询案例的输入，将ajName+candidate作为候选案例的输入，最后将查询案例+候选案例输入模型中进行交互，采用MSE-Loss以Pointwise方式进行排序学习，评估时采用NDCG@30。具体代码请参考`train.py`
 
 - **提取交互向量**：Lawformer训练完毕后，将其作为编码器，①取出crime与ajName的交互向量；②取出query与candidate的交互向量；③取出query与candidate交互后除cls和sep之外所有token_embeddings的平均向量。具体代码请参考`interact_extract.py`
 
