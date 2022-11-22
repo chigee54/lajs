@@ -75,9 +75,9 @@ def test_result(dataloader, model, device):
 
 def train(model, train_dataloader, valid_dataloader, args):
     model.to(args.device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.mlp_lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.rank_lr, weight_decay=args.weight_decay)
     best = 0
-    for epoch in tqdm(range(args.mlp_epoch_num)):
+    for epoch in tqdm(range(args.rank_epoch_num)):
         epoch_loss = 0.0
         current_step = 0
         model.train()
@@ -96,12 +96,12 @@ def train(model, train_dataloader, valid_dataloader, args):
 
         epoch_loss = epoch_loss / current_step
         ndcg30 = evaluate(model, valid_dataloader, args.device)
-        print('Epoch[{}/{}], loss:{}, ndcg30: {}'.format(epoch + 1, args.mlp_epoch_num, epoch_loss, ndcg30))
+        print('Epoch[{}/{}], loss:{}, ndcg30: {}'.format(epoch + 1, args.rank_epoch_num, epoch_loss, ndcg30))
         if best < ndcg30:
             best = ndcg30
-            torch.save(model, args.mlp_output_path + '/' + f"rank_mlp.pt")
-            print('higher_ndcg30: {}, Epoch[{}/{}], loss:{}, save model\n'.format(best, epoch + 1, args.mlp_epoch_num, epoch_loss))
-            logging.info('higher_ndcg30: {}, Epoch[{}/{}], loss:{}, save model\n'.format(best, epoch + 1, args.mlp_epoch_num, epoch_loss))
+            torch.save(model, args.rank_output_path + '/' + f"rank_mlp.pt")
+            print('higher_ndcg30: {}, Epoch[{}/{}], loss:{}, save model\n'.format(best, epoch + 1, args.rank_epoch_num, epoch_loss))
+            logging.info('higher_ndcg30: {}, Epoch[{}/{}], loss:{}, save model\n'.format(best, epoch + 1, args.rank_epoch_num, epoch_loss))
 
 
 def ranking(args=None,
@@ -123,14 +123,14 @@ def ranking(args=None,
     elif mode == 'train':
         logging.basicConfig(filemode='a',
                             level=logging.INFO,
-                            filename=args.mlp_output_path + '/{}.log'.format("RANK_MLP"),
+                            filename=args.rank_output_path + '/{}.log'.format("RANK_MLP"),
                             format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s')
         dev_x = np.load(dev_embeddings)
         train_x = np.load(train_embeddings)
         dev_y = load_labels(dev_data, dev_x)
         train_y = load_labels(train_data, train_x)
-        train_dataloader = DataLoader(PrepareDataset(train_x, train_y), batch_size=args.mlp_batch_size, shuffle=True, drop_last=True)
-        valid_dataloader = DataLoader(PrepareDataset(dev_x, dev_y, ), batch_size=args.mlp_batch_size, shuffle=False)
+        train_dataloader = DataLoader(PrepareDataset(train_x, train_y), batch_size=args.rank_batch_size, shuffle=True, drop_last=True)
+        valid_dataloader = DataLoader(PrepareDataset(dev_x, dev_y, ), batch_size=args.rank_batch_size, shuffle=False)
         model = RankMLP(args.input_size, args.hidden_size)
         train(model, train_dataloader, valid_dataloader, args)
     else:
