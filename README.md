@@ -9,8 +9,8 @@
 
 
 
-# Simple MLP for Learning to Rank based on Lawformer
-基于Lawformer的简易MLP排序学习。
+# Simple Attention for Learning to Rank based on Lawformer
+基于Lawformer的简易Attention排序学习。
 
 ## 环境配置
 Python==3.8.13
@@ -27,14 +27,13 @@ GPU: RTX3090*1
 在本方法中限制模型的输入总长度为1533（实际上还未达到显存的极限），query长度为509，candidates长度为1020（是论文中的1/3）。
 
 方法：
-- **数据预处理**：既然限制了candidates的长度为1020，那么就得筛选最相关的那一部分作为模型的输入。
-本方法仅考虑ajjbqk字段内容，前五句必选，后面的内容利用BM25进行筛选，筛选出的内容长度≤700，最后加起来总长度不定。具体请参考`data_preprocessing.py`
+- **数据预处理**：既然限制了candidates的长度为1020，那么就得筛选最相关的那一部分作为模型的输入。本方法仅考虑ajjbqk字段内容，前五句必选，后面的内容利用BM25进行筛选，筛选出的内容长度≤700，最后加起来总长度不定。具体代码请参考`data_preprocessing.py`
 
-- **Lawformer-Finetune**：预处理后的数据即可用于微调Lawformer，训练时将crime+query作为查询案例的输入，将ajName+candidate作为候选案例的输入，最后查询案例+候选案例输入模型中进行交互，训练batch_size设置为1，采用MSE-Loss以Pointwise的方式进行排序学习，评估时采用NDCG@30。具体请参考`train.py`
+- **Lawformer-Finetune**：预处理后的数据即可用于微调Lawformer，训练时将crime+query作为查询案例的输入，将ajName+candidate作为候选案例的输入，最后查询案例+候选案例输入模型中进行交互，训练batch_size设置为1，采用MSE-Loss以Pointwise方式进行排序学习，评估时采用NDCG@30。具体代码请参考`train.py`
 
-- **提取交互向量**：在Lawformer微调之后，取出所有查询与候选的交互向量。具体请参考`interact_extract.py`
+- **提取交互向量**：Lawformer训练完毕后，将其作为编码器，①取出crime与ajName的交互向量；②取出query与candidate的交互向量；③取出query与candidate交互后除cls和sep之外所有token_embeddings的平均向量。具体代码请参考`interact_extract.py`
 
-- **训练Rank_MLP**：将所有交互向量分组，每个查询案例对应100个候选案例，搭建一个简易的MLP，对这100个交互向量重新以Pairwise的方式进行排序学习，损失函数采用CoSENT。具体请参考`rank_mlp.py`
+- **训练RankAttention**：将上述提取的三种交互向量按查询分组，每组中的查询案例对应100个候选案例，则每组得到3x100个交互向量，搭建一个用于排序的简易Attention模型，将3种交互向量输出为1个logit，每组100个logits以Pairwise方式进行排序学习，损失函数采用CoSENT。具体代码请参考`rank_attention.py`
 
 
 ## 预测
@@ -77,10 +76,20 @@ python train.py \
 以下为第二阶段测试结果，评测指标为NDCG@30
 
 
-|         模型       |    Dev    |    Test    |
-| :--------------   | --------- | ---------- |
-| Lawformer-Finetune| 0.9386    |            |
-| Lawformer-RankMLP | 0.9491    | 0.9355     |
+|         模型             |    Dev    |    Test    |
+| :--------------         | --------- | ---------- |
+| Lawformer-Finetune      | 0.9386    |            |
+| Lawformer-RankMLP       | 0.9491    | 0.9355     |
+| Lawformer-RankAttention | 0.9542    |            |
+
+
+
+## 参考
+
+- Lawformer：[https://github.com/thunlp/LegalPLMs](https://github.com/thunlp/LegalPLMs)
+
+- CoSENT：[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)
+
 
 
 ## 模型下载
@@ -88,10 +97,4 @@ python train.py \
 百度网盘链接：[https://pan.baidu.com/s/1eusFOqh2KiG3KEo4HQqhgw](https://pan.baidu.com/s/1eusFOqh2KiG3KEo4HQqhgw)
 
 提取码：loxr
-
-## 参考
-
-- CoSENT：[https://spaces.ac.cn/archives/9341](https://spaces.ac.cn/archives/9341)
-
-- Lawformer：[https://github.com/thunlp/LegalPLMs](https://github.com/thunlp/LegalPLMs)
 
