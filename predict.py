@@ -1,12 +1,13 @@
-import argparse
+
 import json
 import torch
+import argparse
 import os, time, logging
-from data_preprocessing import load_data
-from rank_mlp import ranking, RankMLP
-from interact_extract import save_interact_embeddings
-from transformers import AutoTokenizer
 from utils import seed_everything
+from transformers import AutoTokenizer
+from data_preprocessing import load_data
+from rank_attention import ranking, RankAttention
+from interact_extract import save_interact_embeddings
 
 
 parser = argparse.ArgumentParser(description="Help info.")
@@ -14,7 +15,7 @@ parser.add_argument('-device', default='cuda', type=str)
 parser.add_argument('-input', type=str, default='../data/cail2022_类案检索_封测阶段/', help='input path of the dataset directory.')
 parser.add_argument('-output', type=str, default='./', help='output path of the prediction file.')
 parser.add_argument('-encoder_path', type=str, default='saved/bsz1_lr1e-05/lawformer_best.pt', help='encoder path.')
-parser.add_argument('-rank_mlp_path', type=str, default='./saved/bsz1_lr5e-05/rank_mlp_best.pt', help='rank_mlp path.')
+parser.add_argument('-rank_model_path', type=str, default='./saved/bsz1_lr5e-05/RankAttention_best.pt', help='rank_model path.')
 parser.add_argument('-model_path', default='../../pretrained_model/lawformer', type=str)
 parser.add_argument('-tokenizer_path', default="../../pretrained_model/roberta", type=str)
 parser.add_argument('-extract_batch_size', default=10, type=int)
@@ -53,10 +54,8 @@ def main():
     print('interact embeddings saved...')
 
     print('prediction starting...')
-    model = torch.load(args.rank_mlp_path)
     result = ranking(args=args,
                      mode='test',
-                     model=model,
                      test_data=new_test_data_path,
                      test_embeddings=new_test_embedding_path)
     json.dump(result, open(os.path.join(output_path, 'prediction.json'), "w", encoding="utf8"), indent=2,
