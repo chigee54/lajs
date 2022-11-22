@@ -33,9 +33,9 @@ class LongDataset(Dataset):
         token_ids = self.tokenizer.convert_tokens_to_ids(tokens)
         types = [0] * (len(query_cut) + 2) + [1] * (len(candidate_cut) + 1)
         input_ids, token_type_ids, attention_mask = pad_seq([token_ids], [types], self.max_length)
-        feature = {'input_ids': torch.LongTensor(input_ids),
-                   'token_type_ids': torch.LongTensor(token_type_ids),
-                   'attention_mask': torch.LongTensor(attention_mask),
+        feature = {'input_ids': torch.LongTensor(input_ids[0]),
+                   'token_type_ids': torch.LongTensor(token_type_ids[0]),
+                   'attention_mask': torch.LongTensor(attention_mask[0]),
                    'label': data['labels']
                    }
         return feature
