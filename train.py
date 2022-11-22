@@ -8,8 +8,8 @@ import torch.nn as nn
 from tqdm import tqdm
 from os.path import join
 from loguru import logger
-from rank_mlp import ranking
 from models import Lawformer
+from rank_attention import ranking
 from data_preprocessing import load_data
 from torch.utils.data import DataLoader, Dataset
 from interact_extract import save_interact_embeddings
@@ -59,9 +59,8 @@ def scheduler_with_optimizer(model, train_loader, args):
     return optimizer, scheduler
 
 
-def evaluate(model, dataloader):
+def evaluate(model, dataloader, all_labels):
     model.eval()
-    all_labels, sub_labels = {}, {}
     with torch.no_grad():
         all_preds, info = {}, {}
         for data in dataloader:
@@ -69,11 +68,8 @@ def evaluate(model, dataloader):
             score, label = model(**data)
             for n, i in enumerate(zip(label[0], label[1], label[2])):
                 if i[0] not in info.keys():
-                    sub_labels[i[1]] = i[2]
-                    all_labels[i[0]] = sub_labels
                     info[i[0]] = [[i[1]], [score[n]]]
                 else:
-                    all_labels[i[0]][i[1]] = i[2]
                     info[i[0]][1].append(score[n])
                     info[i[0]][0].append(i[1])
         for qidx in info.keys():
@@ -88,6 +84,7 @@ def evaluate(model, dataloader):
 
 
 def train(model, tokenizer, train_file, dev_file, saved_model_path, args):
+    all_labels = json.load(open(args.input_label_path, 'r', encoding='utf8'))
     train_data = LongDataset(train_file, tokenizer, args.max_length)
     dev_data = LongDataset(dev_file, tokenizer, args.max_length)
     dev_loader = DataLoader(dev_data, batch_size=args.eval_batch_size, shuffle=False)
@@ -112,7 +109,7 @@ def train(model, tokenizer, train_file, dev_file, saved_model_path, args):
             model.zero_grad()
             if step % args.report_step == 0:
                 torch.cuda.empty_cache()
-                ndcg30 = evaluate(model, dev_loader)
+                ndcg30 = evaluate(model, dev_loader, all_labels)
                 logger.info('Epoch[{}/{}], loss:{}, ndcg30: {}'.format(epoch + 1, args.num_epochs, loss.item(), ndcg30))
                 model.train()
                 if best < ndcg30:
@@ -141,10 +138,10 @@ if __name__ == '__main__':
     parser.add_argument('-gradient_accumulation_step', default=1, type=int)
     # Interact Extractor Argument
     parser.add_argument('-extract_batch_size', default=1, type=int)
-    # RANK MLP Argument
-    parser.add_argument('-mlp_batch_size', type=int, default=1, help='batch size')
-    parser.add_argument('-mlp_epoch_num', type=int, default=1000, help='number of epochs')
-    parser.add_argument('-mlp_lr', type=float, default=5e-5, help='learning rate')
+    # RankAttention Argument
+    parser.add_argument('-rank_batch_size', type=int, default=1, help='batch size')
+    parser.add_argument('-rank_epoch_num', type=int, default=1000, help='number of epochs')
+    parser.add_argument('-rank_lr', type=float, default=1e-4, help='learning rate')
     parser.add_argument('-weight_decay', type=float, default=0., help='decay weight of optimizer')
     parser.add_argument('-input_size', type=int, default=768)
     parser.add_argument('-hidden_size', type=int, default=384)
@@ -166,7 +163,7 @@ if __name__ == '__main__':
     new_dev_file = os.path.join(os.path.dirname(__file__), 'saved/new_dev_data.json')
     input_path = args.input
     input_query_path = os.path.join(input_path, 'query.json')
-    input_label_path = os.path.join(input_path, 'label_top30_dict.json')
+    args.input_label_path = os.path.join(input_path, 'label_top30_dict.json')
     input_candidate_path = os.path.join(input_path, 'candidates')
 
     print('Data preprocessing...')
@@ -176,14 +173,14 @@ if __name__ == '__main__':
                   saved_dev_file=new_dev_file,
                   saved_train_file=new_train_file,
                   dev_label_file=args.dev_id_file,
-                  label_top30_file=input_label_path,
+                  label_top30_file=args.input_label_path,
                   data_type='train')
     time.sleep(1)
     print('Data preprocessing finished...')
 
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_path)
     tokenizer.add_tokens(['☢'])
-    saved_lawformer_path = join(model_output_path, 'lawformer.pt')
+    saved_lawformer_path = join(model_output_path, 'Lawformer.pt')
     if not os.path.exists(saved_lawformer_path):
         model = Lawformer(args.model_path, tokenizer).to(args.device)
         print('Lawformer training...')
@@ -209,10 +206,10 @@ if __name__ == '__main__':
                                  saved_embeddings=new_train_embedding_path)
     print('Interact embeddings have saved')
 
-    args.mlp_output_path = join(args.output_path, 'bsz{}_lr{}'.format(args.mlp_batch_size, args.mlp_lr))
-    if not os.path.exists(args.mlp_output_path):
-        os.makedirs(args.mlp_output_path)
-    print('RANK MLP training...')
+    args.rank_output_path = join(args.output_path, 'bsz{}_lr{}'.format(args.rank_batch_size, args.rank_lr))
+    if not os.path.exists(args.rank_output_path):
+        os.makedirs(args.rank_output_path)
+    print('RankAttention training...')
     ranking(args=args,
             mode='train',
             dev_data=new_dev_file,
